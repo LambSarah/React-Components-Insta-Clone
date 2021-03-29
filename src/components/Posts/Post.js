@@ -1,31 +1,25 @@
-import React from 'react';
-import Comments from '../Comments/Comments';
-import LikeSection from './LikeSection';
-import PostHeader from './PostHeader';
+import React from 'react'
+import Comments from '../Comments/Comments'
+import LikeSection from './LikeSection'
+import PostHeader from './PostHeader'
 
 const Post = props => {
   // 🔥 Make sure the parent of Post is passing the right props!
-  const { post, likePost } = props;
+  const {
+    likePost,
+    details: { username, thumbnailUrl, imageUrl, id, likes, comments }
+  } = props
 
   return (
     <div className='post-border'>
-      <PostHeader
-        username={post.username}
-        thumbnailUrl={post.thumbnailUrl}
-      />
+      <PostHeader username={username} thumbnailUrl={thumbnailUrl} />{' '}
       <div className='post-image-wrapper'>
-        <img
-          alt='post thumbnail'
-          className='post-image'
-          src={post.imageUrl}
-        />
+        <img alt='post thumbnail' className='post-image' src={imageUrl} />
       </div>
-      {/* Is LikeSection getting all the props it needs to work correctly? */}
-      <LikeSection likePost={() => likePost(post.id)} />
-      {/* Comments also wants its props! */}
-      <Comments />
+      <LikeSection likePost={() => likePost(id)} likes={likes} />
+      <Comments comments={comments} />
     </div>
-  );
-};
+  )
+}
 
-export default Post;
+export default Post
