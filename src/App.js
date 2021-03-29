@@ -5,13 +5,11 @@
 */
 
 // Import the state hook
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 // Import the Posts (plural!) and SearchBar components, since they are used inside App component
 import './App.css'
-import LikeSection from './components/Posts/LikeSection'
 import Posts from './components/Posts/Posts'
 import SearchBar from './components/SearchBar/SearchBar'
-
 // Import the dummyData
 import dummyData from './dummy-data.js'
 
@@ -27,6 +25,9 @@ const App = () => {
   // To make the search bar work (which is stretch) we'd need another state to hold the search term.
   const [searchValue, setSearchValue] = useState('')
   const [searchResults, setSearchResults] = useState([])
+
+  // State for adding comment to post
+  const [comments, setComments] = useState('commentsData')
 
   const likePost = postId => {
     /*
@@ -56,18 +57,48 @@ const App = () => {
     setPosts(findPostAndAddLike)
   }
 
+  // event handler fpr typing in the search box
   const handleSearchTextInput = event => {
     setSearchValue(event.target.value)
     setPosts(searchResults)
   }
 
-  React.useEffect(() => {
+  // when searchValue is changed, executes this function to update search Results
+  useEffect(() => {
     const filteredPosts = posts.filter(post =>
       post.username.toLowerCase().includes(searchValue)
     )
     setSearchResults(filteredPosts)
   }, [searchValue, posts])
 
+  //counter for assigning new comment IDs
+  let newCommentId = 40
+
+  // adds new comment when user clicks "Post" button on comment input
+  const updatePostComments = postId => {
+    const addComment = event => {
+      let newComment = {
+        id: newCommentId,
+        text: event.target.value,
+        user: 'boredEyeball'
+      }
+      let updatedComments = posts.map(post => {
+        if (postId === post.id) {
+          return {
+            post: {
+              ...post,
+              comments: { ...comments, newComment }
+            }
+          }
+        } else {
+          return post
+        }
+      })
+      setComments(updatedComments)
+    }
+
+    setPosts(updatePostComments)
+  }
   return (
     <div className='App'>
       {' '}
@@ -75,11 +106,14 @@ const App = () => {
         //pass props to Posts}
         <div>
           <SearchBar handleSearchTextInput={handleSearchTextInput} />
-          <Posts posts={posts} likePost={likePost} />
+          <Posts
+            posts={posts}
+            likePost={likePost}
+            addComment={updatePostComments}
+          />
         </div>
       }
     </div>
   )
 }
-
 export default App
